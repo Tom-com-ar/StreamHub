@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "mongodb": "^7.2.0"
+  }
+}
