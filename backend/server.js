@@ -6,12 +6,11 @@ const connectDB = require("./src/config/mongodb");
 
 const app = express();
 
-const videoRoutes = require("./src/routes/videos.routes");
-
-app.use("/videos", videoRoutes);
-
 app.use(cors());
 app.use(express.json());
+
+const videoRoutes = require("./src/routes/videos.routes");
+app.use("/videos", videoRoutes);
 
 // conectar DB
 connectDB();
