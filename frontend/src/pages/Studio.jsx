@@ -5,6 +5,17 @@ function Studio() {
   const [editing, setEditing] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
+  const [editGeneros, setEditGeneros] = useState([]);
+
+  const generosOptions = [
+    "Acción",
+    "Comedia",
+    "Drama",
+    "Terror",
+    "Documental",
+    "Música",
+    "Deporte",
+  ];
 
   const fetchVideos = () => {
     fetch("http://localhost:5000/videos/my-videos")
@@ -21,13 +32,30 @@ function Studio() {
     setEditing(video._id);
     setEditTitle(video.title);
     setEditDesc(video.description);
+    setEditGeneros(video.generos || []);
+  };
+
+  const toggleEditGenero = (genero) => {
+    setEditGeneros((prev) =>
+      prev.includes(genero)
+        ? prev.filter((g) => g !== genero)
+        : [...prev, genero]
+    );
   };
 
   const handleSave = async (id) => {
+    const parsedGeneros = Array.from(
+      new Set(editGeneros.map((g) => g.trim()).filter(Boolean))
+    );
+
     await fetch(`http://localhost:5000/videos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: editTitle, description: editDesc }),
+      body: JSON.stringify({
+        title: editTitle,
+        description: editDesc,
+        generos: parsedGeneros,
+      }),
     });
     setEditing(null);
     fetchVideos();
@@ -100,6 +128,32 @@ function Studio() {
                       marginBottom: "12px",
                     }}
                   />
+                  <div style={{ marginBottom: "12px" }}>
+                    <p style={{ color: "#fff", margin: "0 0 8px", fontSize: "13px" }}>
+                      Géneros
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                      {generosOptions.map((g) => (
+                        <button
+                          key={g}
+                          type="button"
+                          onClick={() => toggleEditGenero(g)}
+                          style={{
+                            background: editGeneros.includes(g) ? "#e50914" : "none",
+                            border: "1px solid #e50914",
+                            color: editGeneros.includes(g) ? "#fff" : "#e50914",
+                            padding: "6px 14px",
+                            borderRadius: "20px",
+                            cursor: "pointer",
+                            fontSize: "13px",
+                            transition: "all 0.2s ease",
+                          }}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <div style={{ display: "flex", gap: "8px" }}>
                     <button
                       onClick={() => handleSave(video._id)}

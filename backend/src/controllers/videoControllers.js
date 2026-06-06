@@ -93,14 +93,33 @@ const getMyVideos = async (req, res) => {
 
 const updateVideo = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, generos } = req.body;
+
+    let parsedGeneros = undefined;
+    if (generos !== undefined) {
+      if (Array.isArray(generos)) {
+        parsedGeneros = generos.map((g) => String(g).trim()).filter(Boolean);
+      } else if (typeof generos === "string") {
+        parsedGeneros = generos
+          .split(",")
+          .map((g) => g.trim())
+          .filter(Boolean);
+      }
+    }
+
+    const updateFields = { title, description };
+    if (parsedGeneros !== undefined) {
+      updateFields.generos = parsedGeneros;
+    }
+
     const video = await Video.findByIdAndUpdate(
       req.params.id,
-      { title, description },
+      updateFields,
       { new: true }
     );
     res.json(video);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Error actualizando video" });
   }
 };
