@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import VideoPlayer from "../components/VideoPlayer";
 
 function Home() {
   const [videos, setVideos] = useState([]);
@@ -13,13 +14,10 @@ function Home() {
   return (
     <main className="home-page">
       <header className="home-header">
-        <div>
-          <h1 className="home-title">🎬 StreamHub</h1>
-          <p className="home-subtitle">
-            Explora tu colección de videos en un diseño tipo Netflix con tarjetas
-            grandes, sombras suaves y un estilo más elegante.
-          </p>
-        </div>
+        <h1 className="home-title">🎬 StreamHub</h1>
+        <p className="home-subtitle">
+          Explora tu colección de videos con calidad adaptativa.
+        </p>
       </header>
 
       <section className="video-grid">
@@ -29,11 +27,7 @@ function Home() {
           videos.map((video) => (
             <article key={video._id} className="video-card">
               <div className="video-card-thumb">
-                <video 
-                  controls 
-                  src={video.videoUrl}
-                  poster={video.thumbnail}
-                />
+                <VideoPlayer src={video.videoUrl} poster={video.thumbnail} />
               </div>
               <div className="video-card-content">
                 <h3 className="video-card-title">{video.title}</h3>

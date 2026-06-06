@@ -3,34 +3,50 @@ import { useState } from "react";
 export default function Load() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [thumbnail, setThumbnail] = useState("");
+  const [file, setFile] = useState(null);
+  const [progress, setProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!file) return alert("Seleccioná un archivo MP4");
 
-    const res = await fetch("http://localhost:5000/videos", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        videoUrl,
-        thumbnail
-      })
-    });
-
-    if (res.ok) {
-      alert("🎬 Video subido con éxito");
-      setTitle("");
-      setDescription("");
-      setVideoUrl("");
-      setThumbnail("");
-    } else {
-      alert("❌ Error al subir video");
+    if (file.size > 100 * 1024 * 1024) {
+      alert("❌ El video es demasiado pesado. El máximo es 100MB.");
+      return;
     }
+
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("video", file);
+
+    setUploading(true);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:5000/videos");
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        setProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        alert("Video subido con éxito");
+        setTitle("");
+        setDescription("");
+        setFile(null);
+        setProgress(0);
+      } else {
+        alert("Error al subir video");
+      }
+      setUploading(false);
+    };
+
+    xhr.send(formData);
   };
 
   return (
@@ -45,7 +61,6 @@ export default function Load() {
           className="load-input"
           required
         />
-
         <input
           placeholder="Descripción"
           value={description}
@@ -53,25 +68,33 @@ export default function Load() {
           className="load-input"
           required
         />
-
         <input
-          placeholder="URL del video (mp4, webm, etc)"
-          value={videoUrl}
-          onChange={(e) => setVideoUrl(e.target.value)}
+          type="file"
+          accept="video/mp4"
+          onChange={(e) => setFile(e.target.files[0])}
           className="load-input"
           required
         />
+        <p style={{ color: "#888", fontSize: "13px", marginTop: "-8px" }}>
+          Solo MP4 · Máximo 100MB
+        </p>
 
-        <input
-          placeholder="URL de la foto/thumbnail (jpg, png)"
-          value={thumbnail}
-          onChange={(e) => setThumbnail(e.target.value)}
-          className="load-input"
-          required
-        />
+        {progress > 0 && (
+          <div style={{ width: "100%", background: "#333", borderRadius: "8px", overflow: "hidden" }}>
+            <div style={{
+              width: `${progress}%`,
+              background: "#e50914",
+              height: "8px",
+              transition: "width 0.3s ease"
+            }} />
+            <p style={{ color: "#fff", textAlign: "center", margin: "4px 0", fontSize: "14px" }}>
+              {progress}%
+            </p>
+          </div>
+        )}
 
-        <button className="load-button" type="submit">
-          Subir video
+        <button className="load-button" type="submit" disabled={uploading}>
+          {uploading ? `Subiendo... ${progress}%` : "Subir video"}
         </button>
       </form>
     </div>
