@@ -46,4 +46,31 @@ const createVideo = async (req, res) => {
   }
 };
 
-module.exports = { getVideos, createVideo };
+
+const likeVideo = async (req, res) => {
+  try {
+    const video = await Video.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { likes: 1 } },
+      { new: true }
+    );
+    res.json({ likes: video.likes });
+  } catch (error) {
+    res.status(500).json({ error: "Error al dar like" });
+  }
+};
+
+const dislikeVideo = async (req, res) => {
+  try {
+    const video = await Video.findByIdAndUpdate(
+      req.params.id,
+      { $inc: { likes: -1 } },
+      { new: true }
+    );
+    res.json({ likes: video.likes });
+  } catch (error) {
+    res.status(500).json({ error: "Error al quitar like" });
+  }
+};
+
+module.exports = { getVideos, createVideo, likeVideo, dislikeVideo };
