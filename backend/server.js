@@ -17,6 +17,9 @@ app.use("/history", historyRoutes);
 
 const commentRoutes = require("./src/routes/comments.routes");
 app.use("/comments", commentRoutes);
+
+const recommendationRoutes = require("./src/routes/recommendations.routes");
+app.use("/recommendations", recommendationRoutes);
 // conectar DB
 connectDB();
 

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import VideoPlayer from "../components/VideoPlayer";
 import CommentSection from "../components/CommentSection";
+import RecommendedRow from "../components/RecommendedRow";
 
-function Watch({ video, continueFrom, onBack }) {
+function Watch({ video, continueFrom, onBack, onWatch }) {
   const [likes, setLikes] = useState(video.likes);
   const [liked, setLiked] = useState(
     localStorage.getItem(`liked_${video._id}`) === "true"
@@ -91,7 +92,7 @@ function Watch({ video, continueFrom, onBack }) {
           </div>
         )}
 
-        <div style={{ display: "flex", gap: "10px" }}>
+        <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
           <button
             onClick={handleLike}
             style={{
@@ -124,6 +125,8 @@ function Watch({ video, continueFrom, onBack }) {
             {inList ? "✓ En mi lista" : "+ Mi lista"}
           </button>
         </div>
+
+        <RecommendedRow videoId={video._id} onWatch={onWatch} />
 
         <CommentSection videoId={video._id} />
       </div>

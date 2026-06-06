@@ -53,6 +53,7 @@ function App() {
             video={currentVideo}
             continueFrom={continueFrom}
             onBack={() => setPage("home")}
+            onWatch={handleWatch}
           />
         )}
       </main>
