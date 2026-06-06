@@ -6,7 +6,9 @@ const videoSchema = new mongoose.Schema(
     description: String,
     videoUrl: String,
     thumbnail: String,
-    likes: { type: Number, default: 0 }
+    likes: { type: Number, default: 0 },
+    generos: [{ type: String }],
+    vistas: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

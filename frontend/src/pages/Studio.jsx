@@ -135,9 +135,29 @@ function Studio() {
                 <>
                   <h3 style={{ color: "#fff", margin: "0 0 4px", fontSize: "16px" }}>{video.title}</h3>
                   <p style={{ color: "#888", margin: "0 0 8px", fontSize: "14px" }}>{video.description}</p>
-                  <p style={{ color: "#555", margin: "0 0 12px", fontSize: "12px" }}>
+                  <p style={{ color: "#555", margin: "0 0 8px", fontSize: "12px" }}>
                     ❤️ {video.likes} likes · {new Date(video.createdAt).toLocaleDateString()}
                   </p>
+
+                  {video.generos && video.generos.length > 0 && (
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" }}>
+                      {video.generos.map((g) => (
+                        <span
+                          key={g}
+                          style={{
+                            background: "rgba(229, 9, 20, 0.15)",
+                            border: "1px solid rgba(229, 9, 20, 0.4)",
+                            color: "#e50914",
+                            padding: "2px 8px",
+                            borderRadius: "20px",
+                            fontSize: "11px",
+                          }}
+                        >
+                          {g}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <div style={{ display: "flex", gap: "8px" }}>
                     <button
                       onClick={() => handleEdit(video)}

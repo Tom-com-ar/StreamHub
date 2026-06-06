@@ -8,7 +8,7 @@ function VideoCard({ video, continueFrom, onClick }) {
       onClick={onClick}
       style={{ cursor: "pointer" }}
     >
-      <div className="video-card-thumb">
+      <div className="video-card-thumb" style={{ position: "relative" }}>
         <img
           src={video.thumbnail || "https://placehold.co/400x220/1a1a1a/888?text=Sin+thumbnail"}
           alt={video.title}
@@ -32,6 +32,32 @@ function VideoCard({ video, continueFrom, onClick }) {
       <div className="video-card-content">
         <h3 className="video-card-title">{video.title}</h3>
         <p className="video-card-desc">{video.description}</p>
+
+        {/* Géneros */}
+        {video.generos && video.generos.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "8px" }}>
+            {video.generos.map((g) => (
+              <span
+                key={g}
+                style={{
+                  background: "rgba(229, 9, 20, 0.15)",
+                  border: "1px solid rgba(229, 9, 20, 0.4)",
+                  color: "#e50914",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
+                  fontSize: "11px",
+                }}
+              >
+                {g}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Likes */}
+        <p style={{ color: "#888", fontSize: "13px", marginTop: "10px" }}>
+          ❤️ {video.likes} likes
+        </p>
       </div>
     </article>
   );

@@ -12,15 +12,23 @@ const createVideo = async (req, res) => {
     const { title, description } = req.body;
     const file = req.file;
 
+    // Parsear géneros manualmente
+    let generos = [];
+    if (req.body.generos) {
+      try {
+        generos = JSON.parse(req.body.generos);
+      } catch {
+        generos = [];
+      }
+    }
+
+    console.log("Géneros parseados:", generos);
+
     if (!file) return res.status(400).json({ error: "No se recibió archivo" });
 
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "video",
-          folder: "streamhub",
-          chunk_size: 6000000, // 6MB por chunk
-        },
+        { resource_type: "video", folder: "streamhub", chunk_size: 6000000 },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
@@ -32,6 +40,7 @@ const createVideo = async (req, res) => {
     const newVideo = new Video({
       title,
       description,
+      generos,
       videoUrl: result.secure_url,
       thumbnail: result.secure_url
         .replace("/upload/", "/upload/so_5/")

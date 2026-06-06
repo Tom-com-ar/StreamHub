@@ -4,8 +4,15 @@ export default function Load() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
+  const [generos, setGeneros] = useState([]);
   const [progress, setProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
+
+  const toggleGenero = (g) => {
+    setGeneros((prev) =>
+      prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g]
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,11 +23,11 @@ export default function Load() {
       return;
     }
 
-
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
     formData.append("video", file);
+    formData.append("generos", JSON.stringify(generos));
 
     setUploading(true);
 
@@ -35,13 +42,14 @@ export default function Load() {
 
     xhr.onload = () => {
       if (xhr.status === 200) {
-        alert("Video subido con éxito");
+        alert("🎬 Video subido con éxito");
         setTitle("");
         setDescription("");
         setFile(null);
+        setGeneros([]);
         setProgress(0);
       } else {
-        alert("Error al subir video");
+        alert("❌ Error al subir video");
       }
       setUploading(false);
     };
@@ -61,6 +69,7 @@ export default function Load() {
           className="load-input"
           required
         />
+
         <input
           placeholder="Descripción"
           value={description}
@@ -68,6 +77,7 @@ export default function Load() {
           className="load-input"
           required
         />
+
         <input
           type="file"
           accept="video/mp4"
@@ -78,6 +88,36 @@ export default function Load() {
         <p style={{ color: "#888", fontSize: "13px", marginTop: "-8px" }}>
           Solo MP4 · Máximo 100MB
         </p>
+
+        <div>
+          <p style={{ color: "#fff", fontSize: "14px", marginBottom: "10px" }}>
+            Géneros
+          </p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+            {["Acción", "Comedia", "Drama", "Terror", "Documental", "Música", "Deporte"].map((g) => (
+              <button
+                key={g}
+                type="button"
+                onClick={() => toggleGenero(g)}
+                style={{
+                  background: generos.includes(g) ? "#e50914" : "none",
+                  border: "1px solid #e50914",
+                  color: generos.includes(g) ? "#fff" : "#e50914",
+                  padding: "6px 14px",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  fontSize: "13px",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+          <p style={{ color: "#888", fontSize: "13px", marginTop: "8px" }}>
+            Seleccioná uno o más géneros
+          </p>
+        </div>
 
         {progress > 0 && (
           <div style={{ width: "100%", background: "#333", borderRadius: "8px", overflow: "hidden" }}>

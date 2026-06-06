@@ -71,6 +71,26 @@ function Watch({ video, continueFrom, onBack }) {
         <h2 style={{ color: "#fff", margin: "0 0 8px" }}>{video.title}</h2>
         <p style={{ color: "#888", margin: "0 0 16px" }}>{video.description}</p>
 
+        {video.generos && video.generos.length > 0 && (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "16px" }}>
+            {video.generos.map((g) => (
+              <span
+                key={g}
+                style={{
+                  background: "rgba(229, 9, 20, 0.15)",
+                  border: "1px solid rgba(229, 9, 20, 0.4)",
+                  color: "#e50914",
+                  padding: "2px 10px",
+                  borderRadius: "20px",
+                  fontSize: "12px",
+                }}
+              >
+                {g}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div style={{ display: "flex", gap: "10px" }}>
           <button
             onClick={handleLike}
