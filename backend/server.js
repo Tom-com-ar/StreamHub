@@ -12,6 +12,11 @@ app.use(express.json());
 const videoRoutes = require("./src/routes/videos.routes");
 app.use("/videos", videoRoutes);
 
+const historyRoutes = require("./src/routes/history.routes");
+app.use("/history", historyRoutes);
+
+const commentRoutes = require("./src/routes/comments.routes");
+app.use("/comments", commentRoutes);
 // conectar DB
 connectDB();
 

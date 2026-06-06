@@ -1,71 +1,62 @@
 import { useEffect, useState } from "react";
 import VideoPlayer from "../components/VideoPlayer";
 
-function VideoCard({ video }) {
-  const [likes, setLikes] = useState(video.likes);
-  const [liked, setLiked] = useState(
-    localStorage.getItem(`liked_${video._id}`) === "true"
-  );
-
-  const handleLike = async () => {
-    if (liked) {
-      // Sacar like
-      const res = await fetch(`http://localhost:5000/videos/${video._id}/dislike`, {
-        method: "PATCH",
-      });
-      const data = await res.json();
-      setLikes(data.likes);
-      setLiked(false);
-      localStorage.removeItem(`liked_${video._id}`);
-    } else {
-      // Dar like
-      const res = await fetch(`http://localhost:5000/videos/${video._id}/like`, {
-        method: "PATCH",
-      });
-      const data = await res.json();
-      setLikes(data.likes);
-      setLiked(true);
-      localStorage.setItem(`liked_${video._id}`, "true");
-    }
-  };
-
+function VideoCard({ video, continueFrom, onClick }) {
   return (
-    <article className="video-card">
+    <article
+      className="video-card"
+      onClick={onClick}
+      style={{ cursor: "pointer" }}
+    >
       <div className="video-card-thumb">
-        <VideoPlayer src={video.videoUrl} poster={video.thumbnail} />
+        <img
+          src={video.thumbnail || "https://placehold.co/400x220/1a1a1a/888?text=Sin+thumbnail"}
+          alt={video.title}
+          style={{ width: "100%", height: "180px", objectFit: "cover", display: "block" }}
+        />
+        {continueFrom > 0 && (
+          <div style={{
+            position: "absolute",
+            bottom: "8px",
+            left: "8px",
+            background: "rgba(0,0,0,0.8)",
+            color: "#e50914",
+            fontSize: "12px",
+            padding: "3px 8px",
+            borderRadius: "4px",
+          }}>
+            ▶ {Math.floor(continueFrom / 60)}:{String(continueFrom % 60).padStart(2, "0")}
+          </div>
+        )}
       </div>
       <div className="video-card-content">
         <h3 className="video-card-title">{video.title}</h3>
         <p className="video-card-desc">{video.description}</p>
-        <button
-          onClick={handleLike}
-          style={{
-            marginTop: "12px",
-            background: liked ? "#e50914" : "none",
-            border: "1px solid #e50914",
-            color: liked ? "#fff" : "#e50914",
-            padding: "6px 16px",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "14px",
-            transition: "all 0.2s ease",
-          }}
-        >
-          ❤️ {likes} {liked ? "Quitar like" : "Me gusta"}
-        </button>
       </div>
     </article>
   );
 }
 
-function Home() {
+function Home({ onWatch }) {
   const [videos, setVideos] = useState([]);
+  const [history, setHistory] = useState({});
 
   useEffect(() => {
     fetch("http://localhost:5000/videos")
       .then((res) => res.json())
       .then((data) => setVideos(data))
       .catch((err) => console.error("Error cargando videos:", err));
+
+    fetch("http://localhost:5000/history")
+      .then((res) => res.json())
+      .then((data) => {
+        const map = {};
+        data.forEach((entry) => {
+          if (entry.videoId) map[entry.videoId._id] = entry.progress;
+        });
+        setHistory(map);
+      })
+      .catch((err) => console.error("Error cargando historial:", err));
   }, []);
 
   return (
@@ -79,10 +70,15 @@ function Home() {
 
       <section className="video-grid">
         {videos.length === 0 ? (
-          <p className="empty-state">Cargando videos...</p>
+          <p className="empty-state">No hay videos aún</p>
         ) : (
           videos.map((video) => (
-            <VideoCard key={video._id} video={video} />
+            <VideoCard
+              key={video._id}
+              video={video}
+              continueFrom={history[video._id] || 0}
+              onClick={() => onWatch(video, history[video._id] || 0)}
+            />
           ))
         )}
       </section>

@@ -73,4 +73,36 @@ const dislikeVideo = async (req, res) => {
   }
 };
 
-module.exports = { getVideos, createVideo, likeVideo, dislikeVideo };
+const getMyVideos = async (req, res) => {
+  try {
+    const videos = await Video.find().sort({ createdAt: -1 });
+    res.json(videos);
+  } catch (error) {
+    res.status(500).json({ error: "Error obteniendo videos" });
+  }
+};
+
+const updateVideo = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+    const video = await Video.findByIdAndUpdate(
+      req.params.id,
+      { title, description },
+      { new: true }
+    );
+    res.json(video);
+  } catch (error) {
+    res.status(500).json({ error: "Error actualizando video" });
+  }
+};
+
+const deleteVideo = async (req, res) => {
+  try {
+    await Video.findByIdAndDelete(req.params.id);
+    res.json({ message: "Video eliminado" });
+  } catch (error) {
+    res.status(500).json({ error: "Error eliminando video" });
+  }
+};
+
+module.exports = { getVideos, createVideo, likeVideo, dislikeVideo, getMyVideos, updateVideo, deleteVideo };
